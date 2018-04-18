@@ -9,8 +9,11 @@ class DmozSpider(CrawlSpider):
     allowed_domains = ["bugzilla.mozilla.org"]
     rules = (
             Rule(
-                LinkExtractor(allow=('show_bug\.cgi\?id=\d+', )),
-                callback='parse_item'),
+                LinkExtractor(allow=('show_bug\.cgi\?id=\d+$', )),
+                callback='parse_item', follow=True),
+            Rule(
+                LinkExtractor(allow=('attachment\.cgi\?id=\d+&action=diff$',)),
+                callback='parse_diff'),
         )
 
     def __init__(self, *a, **kw):
@@ -19,8 +22,9 @@ class DmozSpider(CrawlSpider):
 
     @staticmethod
     def urls():
-        limit = 1000
+        limit = 100
         index = 1
+        # yield 'https://bugzilla.mozilla.org/show_bug.cgi?id=15809'
         while True:
             yield "https://bugzilla.mozilla.org/buglist.cgi?" \
                   "bug_status=RESOLVED&" \
@@ -63,18 +67,37 @@ class DmozSpider(CrawlSpider):
         _id = soup.select_one('#this-bug')
         _desc = soup.select_one('#ct-0')
         _blocked = []
+        _depends = []
+        _duplicates = []
         # blocked 是否存在
         if soup.select_one('#field-blocked'):
             _blocked = [self.get_id_by_href(a['href']) for a in soup.select('#field-value-blocked a')]
+
+        # Depends 是否存在
+        if soup.select_one('#field-dependson'):
+            _depends = [self.get_id_by_href(a['href']) for a in soup.select('#field-value-dependson a')]
+
+        # Duplicates 是否存在
+        if soup.select_one("a[href='https://wiki.mozilla.org/BMO/UserGuide/BugFields#duplicates']"):
+            _duplicates = [self.get_id_by_href(a['href']) for a in
+                           soup.find("a", attrs={"href": 'https://wiki.mozilla.org/BMO/UserGuide/BugFields#duplicates'})
+                               .parent.parent.select('div.value > a')]
+        _reporter = soup.select_one('#ch-0 span.fna')
         self.log(type(_assigned))
         item = BugItem()
         item['id'] = self.get_id_by_href(_id['href'])
         item['desc'] = _desc.text
         item['blocked'] = _blocked
-        item['dependson'] = 4
+        item['dependson'] = _depends
         item['assigned'] = _assigned.text if _assigned else 'Unassigned'
-        item['reporter'] = 6
+        item['reporter'] = _reporter.text
+        item['duplicates'] = _duplicates
         yield item
+
+
+    def parse_diff(self, response):
+        soup = BeautifulSoup(response.body, "html.parser")
+
 
     @staticmethod
     def get_id_by_href(href):

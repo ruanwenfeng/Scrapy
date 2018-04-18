@@ -44,3 +44,4 @@ class BugItem(scrapy.Item):
     reporter = scrapy.Field()
     dependson = scrapy.Field()
     blocked = scrapy.Field()
+    duplicates = scrapy.Field()
