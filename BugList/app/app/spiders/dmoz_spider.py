@@ -11,9 +11,9 @@ class DmozSpider(CrawlSpider):
             Rule(
                 LinkExtractor(allow=('show_bug\.cgi\?id=\d+$', )),
                 callback='parse_item', follow=True),
-            Rule(
-                LinkExtractor(allow=('attachment\.cgi\?id=\d+&action=diff$',)),
-                callback='parse_diff'),
+            # Rule(
+            #     LinkExtractor(allow=('attachment\.cgi\?id=\d+&action=diff$',)),
+            #     callback='parse_diff'),
         )
 
     def __init__(self, *a, **kw):
@@ -51,7 +51,7 @@ class DmozSpider(CrawlSpider):
                   "offset={0}&" \
                   "limit={1}".format((index-1)*limit, limit)
             index += 1
-            if (index-1)*limit > 0:
+            if (index-1)*limit > 10000:
                 break
 
     # def parse(self, response):
