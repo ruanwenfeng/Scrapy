@@ -67,6 +67,7 @@ def write_attr(graph, bug_id, bug_data):
 
 def main():
     _set = {}
+    _json_index = {}
     with open('items.json', 'r') as data:
         for line in data:
             _json = json.loads(line, encoding='utf-8')
@@ -134,7 +135,7 @@ def main():
             graph.flush()
             if not flag:
                 graph.close()
-                os.remove('./graph/graph_'+str(index))
+                # os.remove('./graph/graph_'+str(index))
             else:
                 graph.seek(0)
                 tmp = graph.readlines()
@@ -143,10 +144,12 @@ def main():
                 graph.seek(0)
                 graph.truncate()
                 graph.writelines(addr_to)
-        index += 1
         for bug in r:
             print(bug, end=',')
+            _json_index[str(bug)] = str(index)
         print()
+        index += 1
+    json.dump(_json_index, open('./index.json', 'w'))
 
 
 if __name__ == '__main__':
