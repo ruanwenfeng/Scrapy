@@ -1,4 +1,4 @@
-import jieba
+import jieba.analyse
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
@@ -12,17 +12,12 @@ corpos = '一个容易想到的思路，就是找到出现次数最多的词。�
 显然不是这样。因为"中国"是很常见的词，相对而言，"蜜蜂"和"养殖"不那么常见。如果这三个词在一篇文章的出现次数一样多，有理由认为，"蜜蜂"和"养殖"的重要程度要大于"中国"，也就是说，在关键词排序上面，"蜜蜂"和"养殖"应该排在"中国"的前面。\
 所以，我们需要一个重要性调整系数，衡量一个词是不是常见词。如果某个词比较少见，但是它在这篇文章中多次出现，那么它很可能就反映了这篇文章的特性，正是我们所需要的关键词。'
 
-seg_list = jieba.cut(corpos)
-seg_list2 = jieba.cut(corpos)
-text = " ".join(seg_list)
+tags = jieba.analyse.extract_tags(corpos)
 
-# 词频统计
-segStat = {}
-for seg in seg_list2:
-    print(seg)
+print(",".join(tags))
 
 # 创建词云
-wordcloud = WordCloud(font_path="D:\\PDM\\2.1\\simhei.ttf", background_color="black").generate(text)
+wordcloud = WordCloud(font_path="D:\\PDM\\2.1\\simhei.ttf", background_color="black").generate(",".join(tags))
 plt.imshow(wordcloud)
 plt.axis("off")
 plt.show()
