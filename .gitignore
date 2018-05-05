@@ -4,3 +4,5 @@
 __pycache__
 /BugList/dot/graph
 /BugList/.idea
+/BugList/app/items.json
+/BugList/data/final_df.csv
