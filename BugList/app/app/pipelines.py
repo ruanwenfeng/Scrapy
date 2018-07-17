@@ -15,10 +15,14 @@ class AppPipeline(object):
 class JsonWriterPipeline(object):
 
     def __init__(self):
-        self.file = open('items.json', 'a')
+        self.file = None
 
     def process_item(self, item, spider):
+        if not self.file:
+            self.file = open(item['name'], 'w')
+            self.file.flush()
         print(str(spider))
         line = json.dumps(dict(item)) + "\n"
-        self.file.write(line)
-        return item
+        print(self.file.write(line))
+        self.file.flush()
+        return line

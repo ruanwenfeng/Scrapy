@@ -39,9 +39,5 @@ class DmozItem(scrapy.Item):
 # filename
 class BugItem(scrapy.Item):
     id = scrapy.Field()
-    desc = scrapy.Field()
-    assigned = scrapy.Field()
-    reporter = scrapy.Field()
-    dependson = scrapy.Field()
-    blocked = scrapy.Field()
-    duplicates = scrapy.Field()
+    title = scrapy.Field()
+    name = scrapy.Field()
